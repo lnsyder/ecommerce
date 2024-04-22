@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block title %}Checkout{% endblock %}
+{% block body %}
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light d-flex ">
+            <a class="navbar-brand" href="/store">ECommerce</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </nav>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="mt-5">Orders</h2>
+        <div class="row mt-3">
+            {% for order in orders %}
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Order #{{ order.id }}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Total Amount: {{ order.orderPrice }}</h5>
+                        <p class="card-text">Status: {{ order.orderStatus }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

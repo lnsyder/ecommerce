@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}Checkout{% endblock %}
+{% block body %}
+
+    <div class="container py-5">
+        <h1 class="mb-5">Checkout</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cartProduct in cartProducts %}
+                <tr>
+                    <td>{{ cartProduct.product.productName }}</td>
+                    <td>${{ cartProduct.product.productPrice }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2">Total: ${{ totalPrice }}</td>
+            </tr>
+            </tbody>
+        </table>
+            <div class="mb-3">
+                <label for="paymentMethod" class="form-label">Payment Method</label>
+                <select class="form-select" id="paymentMethod">
+                    {% for paymentMethod in paymentMethods %}
+                    <option value="{{ paymentMethod.id }}">{{ paymentMethod.paymentMethodName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button id="placeOrder" type="submit" class="btn btn-primary">Place Order</button>
+    </div>
+
+{% endblock %}

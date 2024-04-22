@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+{% block title %}Store{% endblock %}
+{% block body %}
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light d-flex ">
+            <a class="navbar-brand" href="/store">ECommerce</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    {% for category in categories %}
+                        {% if category.parentCategory is null %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ category.categoryName }}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    {% for subCategory in categories %}
+                                        {% if subCategory.parentCategory is not null and subCategory.parentCategory.id == category.id %}
+                                            <a class="dropdown-item subCategoryItem" href="#"
+                                               data-toggle="dropdown"
+                                               data-category="{{ subCategory.id }}">{{ subCategory.categoryName }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        {% endif %}
+
+                    {% endfor %}
+                </ul>
+
+            </div>
+            <form class="form-inline my-2 my-lg-0">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <button id="insertButton" type="button" class="btn btn-primary ml-2" data-toggle="modal"
+                            data-target="#productModal">
+                        Add Product
+                    </button>
+                {% endif %}
+                <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#cartModal">
+                    Cart
+                </button>
+            </form>
+        </nav>
+    </div>
+
+    <div class="container mt-50">
+        <h1 class="text-center pb-3">PRODUCTS</h1>
+        <div class="row">
+            {% for item in products %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="card mb-30"><a class="card-img-tiles" href="#" data-abc="true">
+                            <div class="inner">
+                                <div id="productMainImg" class="main-img"><img src="{{ item.productImage }}"
+                                                                               alt="Category"></div>
+                                <div class="thumblist"><img src="{{ item.productImage }}" alt="Category"><img
+                                            src="{{ item.productImage }}" alt="Category"></div>
+                            </div>
+                        </a>
+                        <div class="card-body text-center">
+                            <h4 id="productTitle" class="card-title">{{ item.productName }}</h4>
+                            <p id="productCode">{{ item.productCode }}</p>
+                            <p id="productPrice" class="text-muted">{{ item.productPrice }}</p>
+                            <p id="productDescription" style="display:none;"
+                               class="text-muted"
+                               data-description="{{ item.productDescription }}">{{ item.productDescription }}</p>
+                            <a class="btn btn-outline-primary btn-sm addToCart"
+                               href="#" data-id="{{ item.id }}">Add to Cart</a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class="btn btn-outline-primary btn-sm editButton"
+                                   href="#" data-abc="true" data-id="{{ item.id }}">Edit</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Your Shopping Cart
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-image">
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Qty</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="cartItem">
+                        {% for cartProduct in cartProducts %}
+                            <tr data-id="{{ cartProduct.product.id }}">
+                                <td class="w-25">
+                                    <img src="{{ cartProduct.product.productImage }}"
+                                         class="img-fluid img-thumbnail" alt="Sheep">
+                                </td>
+                                <td>{{ cartProduct.product.productName }}</td>
+                                <td class="cartProductPrice">{{ cartProduct.product.productPrice }}</td>
+                                <td class="qty"><input type="text" class="form-control cartProductQuantity" id="input1"
+                                                       value="{{ cartProduct.productQuantity }}"></td>
+                                <td class="cartTotalProductPrice">{{ cartProduct.productQuantity * cartProduct.product.productPrice }}</td>
+                                <td class="removeCartProduct">
+                                    <a href="#" class="btn btn-danger btn-sm">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer border-top-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="checkoutButton" type="button" class="btn btn-success">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div id="productCardContent" class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Product
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="productCardBody" class="card-body">
+                    <img id="productImage" src="" class="card-img-top mb-3" alt="">
+                    <h1 id="productCardId" style="display: none;"></h1>
+                    <div class="mb-3">
+                        <h6>Product Name</h6>
+                        <input id="productCardTitle" type="text">
+                    </div>
+                    <div class="mb-3">
+                        <h6>Product Code</h6>
+                        <input id="productCardCode" type="text">
+                    </div>
+                    <div class="mb-3">
+                        <h6>Product Price</h6>
+                        <input id="productCardPrice" type="text">
+                    </div>
+                    <div class="mb-3">
+                        <h6>Product Categories</h6>
+                        <select id="productCardCategories" class="data-mdb-select-init" multiple>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.categoryName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Product Description</h6>
+                        <textarea id="productCardDescription" rows="4" cols="50">
+                    </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 d-flex justify-content-between">
+                    <button id="addButton" type="button" class="btn btn-success">Add</button>
+                    <button id="deleteButton" type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
