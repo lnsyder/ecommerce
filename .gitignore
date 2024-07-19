@@ -35,3 +35,7 @@ yarn-error.log
 /.idea/vcs.xml
 /.idea/codeception.xml
 /.idea/phpspec.xml
+/.env.test
+/tests/bootstrap.php
+/compose.override.yaml
+/symfony.lock
