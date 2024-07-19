@@ -26,3 +26,10 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+/.idea/.gitignore
+/composer.lock
+/.idea/ecommerce.iml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/phpunit.xml
+/.idea/vcs.xml
